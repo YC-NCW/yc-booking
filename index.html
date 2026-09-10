@@ -1,23 +1,52 @@
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจองคิว YC</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        .container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>ระบบจองคิว YC - แอดมิน</h2>
+        <input type="email" id="email" placeholder="อีเมลแอดมิน">
+        <input type="password" id="password" placeholder="รหัสผ่าน">
+        <button onclick="login()">เข้าสู่ระบบ</button>
+    </div>
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQ64i54mJMeOa1iLEGqakmwLfEd5Dm9do",
-    authDomain: "yc-booking-app.firebaseapp.com",
-    projectId: "yc-booking-app",
-    storageBucket: "yc-booking-app.firebasestorage.app",
-    messagingSenderId: "1004583913152",
-    appId: "1:1004583913152:web:3f5d1a7396cc5727f54f25",
-    measurementId: "G-KXR9CB36HF"
-  };
+    <!-- โค้ดเชื่อมต่อ Firebase ของคุณ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQ64i54mJMeOa1iLEQqakmwLFed5Dm9do",
+            authDomain: "yc-booking-app.firebaseapp.com",
+            projectId: "yc-booking-app",
+            storageBucket: "yc-booking-app.firebasestorage.app",
+            messagingSenderId: "1004583913152",
+            appId: "1:1004583913152:web:3f5d1a7396cc5727f54f25",
+            measurementId: "G-KXR9CB36HF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.login = function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert("เข้าสู่ระบบสำเร็จ!");
+                })
+                .catch((error) => {
+                    alert("เกิดข้อผิดพลาด: " + error.message);
+                });
+        }
+    </script>
+</body>
+</html>
