@@ -1,177 +1,23 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YC Booking - ระบบจองคิวให้คำปรึกษา</title>
-    <!-- Tailwind CSS สำหรับตกแต่งเว็บให้สวยงาม -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Prompt', sans-serif; } </style>
-</head>
-<body class="bg-emerald-50 text-slate-800">
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm p-4 flex justify-between items-center max-w-4xl mx-auto rounded-b-2xl mt-0">
-        <h1 class="text-xl font-bold text-emerald-600">🌱 YC Consultation Booking</h1>
-        <button onclick="toggleAdminView()" id="adminBtn" class="text-sm bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition">เข้าสู่ระบบแอดมิน</button>
-    </nav>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQ64i54mJMeOa1iLEGqakmwLfEd5Dm9do",
+    authDomain: "yc-booking-app.firebaseapp.com",
+    projectId: "yc-booking-app",
+    storageBucket: "yc-booking-app.firebasestorage.app",
+    messagingSenderId: "1004583913152",
+    appId: "1:1004583913152:web:3f5d1a7396cc5727f54f25",
+    measurementId: "G-KXR9CB36HF"
+  };
 
-    <main class="max-w-xl mx-auto p-6 mt-6 bg-white shadow-md rounded-2xl">
-        
-        <!-- ส่วนฟอร์มจองคิวสำหรับนักเรียน -->
-        <div id="bookingSection">
-            <h2 class="text-2xl font-semibold mb-2 text-slate-700">จองคิวพูดคุยกับพี่ YC</h2>
-            <p class="text-sm text-slate-500 mb-6">พื้นที่ปลอดภัยสำหรับรับฟังและให้คำปรึกษา ข้อมูลของคุณจะถูกเก็บเป็นความลับ</p>
-
-            <form id="bookingForm" onsubmit="submitBooking(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">ชื่อเล่น หรือ นามสมมติ</label>
-                    <input type="text" id="nickname" required class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-emerald-400 outline-none" placeholder="เช่น น้องฟ้า, Aaa">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">เรื่องที่ต้องการปรึกษา (คร่าวๆ)</label>
-                    <select id="topic" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-emerald-400 outline-none">
-                        <option value="เรื่องเรียน/การบ้าน">เรื่องเรียน / การบ้าน</option>
-                        <option value="ความเครียด/สุขภาพจิต">ความเครียด / สุขภาพจิต</option>
-                        <option value="ความสัมพันธ์/เพื่อน/ครอบครัว">ความสัมพันธ์ / เพื่อน / ครอบครัว</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">วันที่ต้องการ</label>
-                        <input type="date" id="date" required class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-emerald-400 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">ช่วงเวลา</label>
-                        <select id="timeSlot" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-emerald-400 outline-none">
-                            <option value="16:00 - 16:40">16:00 - 16:40 น.</option>
-                            <option value="16:40 - 17:20">16:40 - 17:20 น.</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-medium transition shadow-lg shadow-emerald-600/20">ยืนยันการจองคิว</button>
-            </form>
-        </div>
-
-        <!-- ส่วนหน้าแอดมิน (ซ่อนไว้ก่อน) -->
-        <div id="adminSection" class="hidden">
-            <h2 class="text-2xl font-semibold mb-4 text-slate-700">🛠️ จัดการคิว (สำหรับพี่ YC)</h2>
-            <div id="adminLoginBox" class="mb-6">
-                <input type="email" id="adminEmail" placeholder="อีเมลแอดมิน" class="w-full p-2 border rounded-lg mb-2">
-                <input type="password" id="adminPassword" placeholder="รหัสผ่าน" class="w-full p-2 border rounded-lg mb-2">
-                <button onclick="loginAdmin()" class="bg-blue-600 text-white px-4 py-2 rounded-lg w-full">Login</button>
-            </div>
-            <div id="adminDashboard" class="hidden">
-                <p class="text-sm text-green-600 mb-4">✅ เข้าสู่ระบบสำเร็จ</p>
-                <h3 class="font-semibold mb-2">รายการจองทั้งหมด:</h3>
-                <div id="bookingList" class="space-y-3">
-                    <!-- รายการจะถูกโหลดมาแสดงตรงนี้ด้วย JavaScript -->
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Firebase SDK (Modular) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        // ⚠️ (ถ้ายังไม่ได้ตั้งค่า Firebase ให้ปล่อยไว้แบบนี้ก่อน ตัวหน้าเว็บจะยังบันทึกข้อมูลไม่ได้ แต่หน้าตาเว็บจะขึ้นปกติ)
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // ฟังก์ชันจองคิว
-        window.submitBooking = async function(event) {
-            event.preventDefault();
-            const nickname = document.getElementById('nickname').value;
-            const topic = document.getElementById('topic').value;
-            const date = document.getElementById('date').value;
-            const timeSlot = document.getElementById('timeSlot').value;
-
-            try {
-                await addDoc(collection(db, "bookings"), {
-                    nickname, topic, date, timeSlot,
-                    status: "pending",
-                    createdAt: new Date()
-                });
-                alert("จองคิวสำเร็จ! พี่ๆ YC จะตรวจสอบและเตรียมตัวต้อนรับนะ");
-                document.getElementById('bookingForm').reset();
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                alert("โหมดทดสอบ: เชื่อมต่อ Firebase Config แล้วหรือยัง? (ถ้ายัง ระบบจะยังไม่บันทึกลงฐานข้อมูลจริง)");
-            }
-        }
-
-        // ฟังก์ชันล็อกอินแอดมิน
-        window.loginAdmin = async function() {
-            const email = document.getElementById('adminEmail').value;
-            const password = document.getElementById('adminPassword').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                document.getElementById('adminLoginBox').classList.add('hidden');
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                loadBookings();
-            } catch (error) {
-                alert("Login ไม่ผ่าน: " + error.message);
-            }
-        }
-
-        // โหลดข้อมูลขึ้นแดชบอร์ดแอดมิน
-        async function loadBookings() {
-            const listEl = document.getElementById('bookingList');
-            listEl.innerHTML = "กำลังโหลด...";
-            const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
-            const querySnapshot = await getDocs(q);
-            
-            listEl.innerHTML = "";
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                listEl.innerHTML += `
-                    <div class="p-3 border rounded-xl bg-slate-50 flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold">${data.nickname} (${data.topic})</p>
-                            <p class="text-xs text-slate-500">📅 ${data.date} | ⏰ ${data.timeSlot}</p>
-                        </div>
-                        <span class="text-xs px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full">${data.status}</span>
-                    </div>
-                `;
-            });
-        }
-    </script>
-
-    <script>
-        // ควบคุมการสลับหน้าจอ Admin / User
-        let isAdminView = false;
-        function toggleAdminView() {
-            isAdminView = !isAdminView;
-            const bookingSec = document.getElementById('bookingSection');
-            const adminSec = document.getElementById('adminSection');
-            const btn = document.getElementById('adminBtn');
-
-            if (isAdminView) {
-                bookingSec.classList.add('hidden');
-                adminSec.classList.remove('hidden');
-                btn.innerText = "กลับหน้าจองคิว";
-            } else {
-                bookingSec.classList.remove('hidden');
-                adminSec.classList.add('hidden');
-                btn.innerText = "เข้าสู่ระบบแอดมิน";
-            }
-        }
-    </script>
-</body>
-</html>
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
